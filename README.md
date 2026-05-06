@@ -1,27 +1,20 @@
 # Express CRUD API
 
-A simple Node.js + Express REST API demonstrating CRUD operations using in-memory data storage.
+A Node.js + Express REST API implementing CRUD operations with a modular MVC-style structure.
 
 ## Features
-- REST API using Express
 - Create, read, update, delete users
-- JSON-based responses
-- Simple in-memory data store (no database)
+- Organized with routes and controllers (MVC-style)
+- JSON-based API
+- Easily testable via REST Client
 
-## API Endpoints
-
-### Health Check
-GET /
-
-### Status
-GET /api/status
+## API
 
 ### Get all users
 GET /api/users
 
 ### Create user
 POST /api/users
-Content-Type: application/json
 
 {
   "name": "Sam"
@@ -29,7 +22,6 @@ Content-Type: application/json
 
 ### Update user
 PUT /api/users/:id
-Content-Type: application/json
 
 {
   "name": "Updated Name"
@@ -38,14 +30,19 @@ Content-Type: application/json
 ### Delete user
 DELETE /api/users/:id
 
-## Run Project
+## Run Locally
 
 npm install  
-node index.js
+node index.js  
 
-Server runs at:
+Server runs at:  
 http://localhost:3000
 
-## Tech Stack
-- Node.js
-- Express.js
+## Project Structure
+
+routes/ → API endpoints  
+controllers/ → business logic  
+index.js → app setup  
+
+## Author
+Rucha Kothikar
