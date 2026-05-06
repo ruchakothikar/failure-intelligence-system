@@ -1,3 +1,9 @@
+### Get all users
+GET http://localhost:3000/api/users
+
+###
+
+### Create user
 POST http://localhost:3000/api/users
 Content-Type: application/json
 
@@ -7,17 +13,15 @@ Content-Type: application/json
 
 ###
 
-PUT http://localhost:3000/api/users/2
+### Update user
+PUT http://localhost:3000/api/users/1
 Content-Type: application/json
 
 {
-    "name": "Doe Updated"
+    "name": "Updated name"
 }
 
 ###
 
+### Delete user
 DELETE http://localhost:3000/api/users/1
-
-###
-
-GET http://localhost:3000/api/users
