@@ -1,48 +1,59 @@
-# Express CRUD API
+# Failure Intelligence System
 
-A Node.js + Express REST API implementing CRUD operations with a modular MVC-style structure.
+Backend system that ingests application logs, extracts failure signals, and stores structured failure events for analysis and pattern detection.
+
+---
+
+## Problem
+
+Modern applications generate large volumes of logs, making it difficult to quickly identify meaningful failures. This system reduces log noise by extracting only failure-related signals and storing structured events for downstream analysis.
+
+---
 
 ## Features
-- Create, read, update, delete users
-- Organized with routes and controllers (MVC-style)
-- JSON-based API
-- Easily testable via REST Client
 
-## API
+- Log ingestion via REST API  
+- Rule-based failure extraction from log batches  
+- Structured storage using PostgreSQL  
+- Separation of ingestion, processing, and persistence layers  
 
-### Get all users
-GET /api/users
+---
 
-### Create user
-POST /api/users
+## Tech Stack
 
+- Node.js  
+- Express.js  
+- PostgreSQL  
+- pg (Node.js PostgreSQL client)  
+
+---
+
+## API Reference
+
+### Ingest Failure Logs
+
+**Endpoint:** `POST /api/failures`
+
+**Request Body Example:**
+
+```json
 {
-  "name": "Sam"
+  "service": "payments",
+  "logs": [
+    "INFO Request started",
+    "INFO Calling API",
+    "ERROR Timeout after 30s"
+  ]
 }
+```
 
-### Update user
-PUT /api/users/:id
-
-{
-  "name": "Updated Name"
-}
-
-### Delete user
-DELETE /api/users/:id
-
-## Run Locally
-
-npm install  
-node index.js  
-
-Server runs at:  
-http://localhost:3000
+---
 
 ## Project Structure
 
-routes/ → API endpoints  
-controllers/ → business logic  
-index.js → app setup  
-
-## Author
-Rucha Kothikar
+```
+index.js        Main server + API routes  
+db              PostgreSQL connection (pg Pool)  
+test.http       API test requests  
+package.json    Dependencies and scripts  
+```
