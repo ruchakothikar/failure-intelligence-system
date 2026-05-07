@@ -1,10 +1,38 @@
+require("dotenv").config();
 const express = require("express");
+const { Pool } = require("pg");
+
 const app = express();
 
 app.use(express.json());
 
-//Temporary in-memory storage, to be replaced by PostgreSQL later
-let failures = [];
+const pool = new Pool({
+    user: process.env.DB_USER,
+    host: process.env.DB_HOST,
+    database: process.env.DB_NAME,
+    password: process.env.DB_PASSWORD,
+    port: process.env.DB_PORT,
+});
+
+
+// Extracts failure line by keyword
+function extractFailures(logs) {
+    const failureKeywords = ["ERROR", "FAIL", "EXCEPTION", "TIMEOUT"];
+
+    for (let i = 0; i<logs.length; i++) {
+        const line = logs[i];
+
+        for (let j = 0; j<failureKeywords.length; j++) {
+            const keyword = failureKeywords[j];
+
+            if (line.includes(keyword)) {
+                return line;
+            }
+        }
+    }
+
+    return null;
+}
 
 // Home
 app.get("/", (req, res) => {
@@ -15,43 +43,27 @@ app.get("/", (req, res) => {
 });
 
 // Create failure (ingest a failure event)
-app.post("/api/failures", (req, res) => {
-    const { message, service } = req.body;
+app.post("/api/failures", async (req, res) => {
+    const { logs, service } = req.body;
 
-    const newFailure = {
-        id: failures.length + 1,
-        message,
-        service: service || "unknown",
-        timestamp: new Date()
-    };
+    //Extract failure from logs
+    const extractedMessage = extractFailure(logs);
 
-    failures.push(newFailure);
-
-    res.status(201).json(newFailure);
-});
-
-// Get all failures
-app.get("/api/failures", (req, res) => {
-    res.json(failures);
-});
-
-//Get single failure by id
-app.get("/api/failures/:id", (req, res) => {
-    const failure = failures.find(f =>f.id === parseInt(req.params.id));
-
-    if(!failure) {
-        return res.status(404).json({ error: "Failure not found"});
+    //Reject request if nothing is found
+    if (!extractedMessage) {
+        return res.status(400).json({
+            error: "No failure detected in logs"
+        });
     }
 
-    res.json(failure);
+    //Store only extracted failure in DB
+    const result = await pool.query(
+        "INSERT INTO failures (raw_message, service) VALUES ($1, $2) RETURNING *",
+        [extractedMessage, service]
+    );
 
-});
-
-//Delete failure
-app.delete("/api/failures/:id", (req, res) => {
-    failures = failures.filter(f => f.id !== parseInt(req.params.id));
-
-    res.json({ message: "Failure deleted" });
+    //Return stored record
+    res.status(201).json(result.rows[0]);
 });
 
 app.listen(3000, () => {

@@ -2,8 +2,13 @@ POST http://localhost:3000/api/failures
 Content-Type: application/json
 
 {
-    "message": "Stripe API timeout after 30s",
-    "service": "payments"
+    "service": "payments",
+    "logs": [
+        "INFO Request started",
+        "INFO Calling Stripe API",
+        "ERROR Stripe timeout after 30s",
+        "DEBUG retry attempt"
+    ]
 }
 
 ###
