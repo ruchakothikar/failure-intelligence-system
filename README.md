@@ -6,7 +6,7 @@ Backend system that ingests application logs, extracts failure signals, and stor
 
 ## Problem
 
-Modern applications generate large volumes of logs, making it difficult to quickly identify meaningful failures. This system reduces log noise by extracting only failure-related signals and storing structured events for downstream analysis.
+Modern applications generate large volumes of logs, making it difficult to quickly identify meaningful failures. This system reduces log noise by extracting only failure-related signals and storing structured failure events for downstream analysis.
 
 ---
 
@@ -14,8 +14,8 @@ Modern applications generate large volumes of logs, making it difficult to quick
 
 - Log ingestion via REST API  
 - Rule-based failure extraction from log batches  
-- Structured storage using PostgreSQL  
-- Separation of ingestion, processing, and persistence layers  
+- Structured storage of extracted failure events in PostgreSQL  
+- Separation between request handling, extraction logic, and database storage  
 
 ---
 
@@ -51,9 +51,9 @@ Modern applications generate large volumes of logs, making it difficult to quick
 
 ## Project Structure
 
-```
 index.js        Main server + API routes  
-db              PostgreSQL connection (pg Pool)  
 test.http       API test requests  
 package.json    Dependencies and scripts  
-```
+package-lock.json Dependency lock file  
+.env            Environment variables (not committed)  
+.gitignore      Git ignore rules  
