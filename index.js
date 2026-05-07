@@ -47,7 +47,7 @@ app.post("/api/failures", async (req, res) => {
     const { logs, service } = req.body;
 
     //Extract failure from logs
-    const extractedMessage = extractFailure(logs);
+    const extractedMessage = extractFailures(logs);
 
     //Reject request if nothing is found
     if (!extractedMessage) {
@@ -64,6 +64,14 @@ app.post("/api/failures", async (req, res) => {
 
     //Return stored record
     res.status(201).json(result.rows[0]);
+});
+
+app.get("/api/failures", async (req, res) => {
+    const result = await pool.query(
+        "SELECT * FROM failures ORDER BY id DESC"
+    );
+
+    res.json(result.rows);
 });
 
 app.listen(3000, () => {
