@@ -158,6 +158,27 @@ app.get("/api/failures/metrics", async (req, res) => {
     res.json(metrics);
 });
 
+app.get("/api/failures/repeated", async (req, res) => {
+    const hours = parseInt(req.query.hours || "24", 10);
+
+    if (isNaN(hours) || hours <= 0 || hours > 168) {
+        return res.status(400).json({
+            error: "Invalid 'hours' parameter. Must be between 1 and 168."
+        });
+    }
+
+    const result = await pool.query(`
+        SELECT raw_message, service, COUNT(*) AS count
+        FROM failures
+        WHERE created_at >= NOW() - INTERVAL '${hours} hours'
+        GROUP BY raw_message, service
+        HAVING COUNT(*) >= 3
+        ORDER BY count DESC;
+        `);
+
+        res.json(result.rows);
+});
+
 app.listen(3000, () => {
     console.log("Server running on http://localhost:3000");
 });

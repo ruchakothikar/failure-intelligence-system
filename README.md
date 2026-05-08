@@ -2,13 +2,9 @@
 
 Backend system that ingests application logs, extracts structured failure signals, classifies operational issues, generates human-readable failure summaries, and exposes aggregated failure metrics for analysis.
 
----
-
 ## Problem
 
-Modern distributed applications generate massive volumes of logs, making it difficult for engineers to quickly identify meaningful operational failures. This system reduces log noise by extracting failure-related signals and transforming them into structured, queryable events.
-
----
+Modern distributed applications generate large volumes of logs, making it difficult for engineers to quickly identify meaningful operational failures. This system filters log noise by extracting failure-related signals and transforming them into structured, queryable events for easier debugging and analysis.
 
 ## Features
 
@@ -16,70 +12,48 @@ Modern distributed applications generate massive volumes of logs, making it diff
 - Rule-based failure extraction from log batches  
 - Failure categorization and severity classification  
 - Human-readable failure summaries  
+- Time-based failure metrics (configurable time windows)  
+- Repeated failure detection using threshold-based grouping  
 - Structured storage using PostgreSQL  
-- Service-level failure aggregation using SQL `GROUP BY` metrics queries  
-
----
+- Service-level failure aggregation using SQL GROUP BY 
 
 ## Tech Stack
 
 - Node.js  
 - Express.js  
 - PostgreSQL  
-- pg (Node.js PostgreSQL client)  
+- pg (PostgreSQL client)  
 
----
+## API Overview
 
-## API Reference
+### POST /api/failures
+Ingest logs and extract failure signals.
 
-### Ingest Failure Logs
-
-**Endpoint:** `POST /api/failures`
-
-**Request Body Example:**
-
-```json
+Request:
 {
   "service": "payments",
   "logs": [
     "INFO Request started",
-    "INFO Calling API",
     "ERROR Timeout after 30s"
   ]
 }
-```
-
-### Get Aggregated Failure Metrics
-
-**Endpoint:** `GET /api/failures/metrics`
-
-Returns aggregated failure counts grouped by service and failure category.
 
 ---
 
-## Example Response
+### GET /api/failures/metrics?hours=24
+Returns failure counts grouped by service and category.
 
-```json
-{
-  "payments": {
-    "TIMEOUT": 4,
-    "DATABASE": 1
-  },
-  "auth-service": {
-    "AUTH": 2
-  }
-}
-```
+---
+
+### GET /api/failures/repeated?hours=24
+Returns failures that occur repeatedly within a time window.
 
 ---
 
 ## Project Structure
 
-```text
-index.js           Main server, extraction logic, and API routes
-test.http          API test requests
-package.json       Dependencies and scripts
-package-lock.json  Dependency lock file
-.env               Environment variables (not committed)
-.gitignore         Git ignore rules
-```
+index.js        Main server + API routes  
+test.http       API tests  
+package.json    Dependencies  
+.env            Environment variables (not committed)  
+.gitignore      Git ignore rules  

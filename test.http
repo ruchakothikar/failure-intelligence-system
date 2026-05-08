@@ -26,3 +26,11 @@ GET http://localhost:3000/api/failures/metrics?hours=1
 ###
 
 GET http://localhost:3000/api/failures/metrics?hours=-5
+
+###
+
+GET http://localhost:3000/api/failures/repeated
+
+###
+
+GET http://localhost:3000/api/failures/repeated?hours=1
