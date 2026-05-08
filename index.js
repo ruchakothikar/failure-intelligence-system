@@ -47,10 +47,26 @@ function extractFailures(logs) {
                     severity = "MEDIUM";
                 }
 
+                let humanSummary = "Failure detected in application logs";
+
+                if (category === "TIMEOUT") {
+                    humanSummary = "A request exceeded the allowed response time.";
+                }
+                else if (category === "AUTH") {
+                    humanSummary = "Authentication or authorization failure detected.";
+                }
+                else if (category === "DATABASE") {
+                    humanSummary = "Database operation or connection failure detected.";
+                }
+                else if (category === "ERROR") {
+                    humanSummary = "Application error detected during request processing.";
+                }
+
                 return {
                     message: line,
                     category,
-                    severity
+                    severity,
+                    humanSummary
                 };
             }
         }
@@ -93,7 +109,10 @@ app.post("/api/failures", async (req, res) => {
     );
 
     //Return stored record
-    res.status(201).json(result.rows[0]);
+    res.status(201).json({
+        ...result.rows[0],
+        humanSummary: extracted.humanSummary
+    });
 });
 
 app.get("/api/failures", async (req, res) => {
@@ -102,6 +121,31 @@ app.get("/api/failures", async (req, res) => {
     );
 
     res.json(result.rows);
+});
+
+app.get("/api/failures/metrics", async (req, res) => {
+    const result = await pool.query(`
+        SELECT service, category, COUNT(*) AS count
+        FROM failures
+        GROUP BY service, category
+        ORDER BY service;
+        `);
+
+    const rows = result.rows;
+
+    const metrics = {};
+
+    for (let i=0; i<rows.length; i++) {
+        const { service, category, count } = rows[i];
+
+        if(!metrics[service]) {
+            metrics[service] = {};
+        }
+
+        metrics[service][category] = parseInt(count);
+    }
+
+    res.json(metrics);
 });
 
 app.listen(3000, () => {

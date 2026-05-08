@@ -1,12 +1,12 @@
 # Failure Intelligence System
 
-Backend system that ingests application logs, extracts failure signals, and stores structured failure events for analysis and pattern detection.
+Backend system that ingests application logs, extracts structured failure signals, classifies operational issues, generates human-readable failure summaries, and exposes aggregated failure metrics for analysis.
 
 ---
 
 ## Problem
 
-Modern applications generate large volumes of logs, making it difficult to quickly identify meaningful failures. This system reduces log noise by extracting only failure-related signals and storing structured failure events for downstream analysis.
+Modern distributed applications generate massive volumes of logs, making it difficult for engineers to quickly identify meaningful operational failures. This system reduces log noise by extracting failure-related signals and transforming them into structured, queryable events.
 
 ---
 
@@ -14,8 +14,10 @@ Modern applications generate large volumes of logs, making it difficult to quick
 
 - Log ingestion via REST API  
 - Rule-based failure extraction from log batches  
-- Structured storage of extracted failure events in PostgreSQL  
-- Separation between request handling, extraction logic, and database storage  
+- Failure categorization and severity classification  
+- Human-readable failure summaries  
+- Structured storage using PostgreSQL  
+- Service-level failure aggregation using SQL `GROUP BY` metrics queries  
 
 ---
 
@@ -47,13 +49,37 @@ Modern applications generate large volumes of logs, making it difficult to quick
 }
 ```
 
+### Get Aggregated Failure Metrics
+
+**Endpoint:** `GET /api/failures/metrics`
+
+Returns aggregated failure counts grouped by service and failure category.
+
+---
+
+## Example Response
+
+```json
+{
+  "payments": {
+    "TIMEOUT": 4,
+    "DATABASE": 1
+  },
+  "auth-service": {
+    "AUTH": 2
+  }
+}
+```
+
 ---
 
 ## Project Structure
 
-index.js        Main server + API routes  
-test.http       API test requests  
-package.json    Dependencies and scripts  
-package-lock.json Dependency lock file  
-.env            Environment variables (not committed)  
-.gitignore      Git ignore rules  
+```text
+index.js           Main server, extraction logic, and API routes
+test.http          API test requests
+package.json       Dependencies and scripts
+package-lock.json  Dependency lock file
+.env               Environment variables (not committed)
+.gitignore         Git ignore rules
+```
