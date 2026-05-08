@@ -124,9 +124,19 @@ app.get("/api/failures", async (req, res) => {
 });
 
 app.get("/api/failures/metrics", async (req, res) => {
+    const hours = parseInt(req.query.hours || "24", 10);
+
+    //validating hours
+    if (isNaN(hours) || hours <= 0 || hours > 168) {
+        return res.status(400).json({
+            error: "Invalid 'hours' parameter. Must be a number between 1 and 168."
+        });
+    }
+
     const result = await pool.query(`
         SELECT service, category, COUNT(*) AS count
         FROM failures
+        WHERE created_at >= NOW() - INTERVAL '${hours} hours'
         GROUP BY service, category
         ORDER BY service;
         `);
