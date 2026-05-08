@@ -23,10 +23,35 @@ function extractFailures(logs) {
         const line = logs[i];
 
         for (let j = 0; j<failureKeywords.length; j++) {
-            const keyword = failureKeywords[j];
+            if (line.includes(failureKeywords[j])) {
 
-            if (line.includes(keyword)) {
-                return line;
+                let category = "GENERAL_FAILURE";
+                let severity = "LOW";
+
+                const lower = line.toLowerCase();
+
+                if (lower.includes("timeout")) {
+                    category = "TIMEOUT";
+                    severity = "HIGH";
+                }
+                else if (lower.includes("auth") || lower.includes("unauthorized")) {
+                    category = "AUTH";
+                    severity = "HIGH";
+                }
+                else if (lower.includes("db") || lower.includes("connection")) {
+                    category = "DATABASE";
+                    severity = "HIGH";
+                }
+                else if (lower.includes("error")) {
+                    category = "ERROR";
+                    severity = "MEDIUM";
+                }
+
+                return {
+                    message: line,
+                    category,
+                    severity
+                };
             }
         }
     }
@@ -47,10 +72,10 @@ app.post("/api/failures", async (req, res) => {
     const { logs, service } = req.body;
 
     //Extract failure from logs
-    const extractedMessage = extractFailures(logs);
+    const extracted = extractFailures(logs);
 
     //Reject request if nothing is found
-    if (!extractedMessage) {
+    if (!extracted) {
         return res.status(400).json({
             error: "No failure detected in logs"
         });
@@ -58,8 +83,13 @@ app.post("/api/failures", async (req, res) => {
 
     //Store only extracted failure in DB
     const result = await pool.query(
-        "INSERT INTO failures (raw_message, service) VALUES ($1, $2) RETURNING *",
-        [extractedMessage, service]
+        "INSERT INTO failures (raw_message, service, category, severity) VALUES ($1, $2, $3, $4) RETURNING *",
+        [
+            extracted.message,
+            service,
+            extracted.category,
+            extracted.severity
+        ]
     );
 
     //Return stored record
