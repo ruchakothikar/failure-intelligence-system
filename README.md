@@ -15,7 +15,8 @@ Modern distributed applications generate large volumes of logs, making it diffic
 - Time-based failure metrics (configurable time windows)  
 - Repeated failure detection using threshold-based grouping  
 - Structured storage using PostgreSQL  
-- Service-level failure aggregation using SQL GROUP BY 
+- Service-level failure aggregation using SQL GROUP BY
+- Lightweight dashboard UI for visualizing metrics and repeated failures
 
 ## Tech Stack
 
@@ -52,8 +53,9 @@ Returns failures that occur repeatedly within a time window.
 
 ## Project Structure
 
-index.js        Main server + API routes  
-test.http       API tests  
-package.json    Dependencies  
+index.js        Main server + API routes
+index.html      Lightweight monitoring dashboard UI
+test.http       API endpoint tests  
+package.json    Dependencies and scripts
 .env            Environment variables (not committed)  
 .gitignore      Git ignore rules  

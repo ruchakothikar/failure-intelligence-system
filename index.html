@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Failure Intelligence Dashboard</title>
+        <style>
+            body {
+                font-family: Arial, sans-serif;
+                margin: 0;
+                padding: 40px 20px;
+                background: #f8f4ff;
+                color: #333;
+                display: flex;
+                justify-content: center;
+            }
+
+            .container {
+                width: 100%;
+                max-width: 900px;
+            }
+
+            h1 {
+                text-align: center;
+                margin-bottom: 30px;
+                color: #5a4b81;
+            }
+
+            .section {
+                background: #efe7ff;
+                padding: 24px;
+                margin-bottom: 24px;
+                border-radius: 18px;
+                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+            }
+
+            h2 {
+                margin-top: 0;
+                color: #5a4b81;
+            }
+
+            button {
+                margin-right: 10px;
+                padding: 10px 16px;
+                border: none;
+                border-radius: 12px;
+                background: #d8c8ff;
+                color: #333;
+                cursor: pointer;
+                font-weight: bold;
+                transition: 0.2s ease;
+            }
+
+            button:hover {
+                background: #c7b2ff;
+            }
+
+            pre {
+                background: #ffffffcc;
+                color: #333;
+                padding: 12px;
+                overflow-x: auto;
+                border-radius: 10px;
+            }
+        </style>
+    </head>
+
+    <body>
+        <div class = "container">
+
+        <h1>Failure Intelligence Dashboard</h1>
+
+        <div class="section">
+            <h2>Time filter</h2>
+            <button onclick="loadMetrics(1)">1h</button>
+            <button onclick="loadMetrics(24)">24h</button>
+            <button onclick="loadMetrics(168)">7d</button>
+        </div>
+
+        <div class="section">
+            <h2>Metrics</h2>
+            <div id="metrics">Loading...</div>
+        </div>
+
+        <div class="section">
+            <h2>Repeated Failures</h2>
+            <div id="repeated">Loading...</div>
+        </div>
+
+        <script>
+            async function loadMetrics(hours = 24) {
+                const res = await fetch(`http://localhost:3000/api/failures/metrics?hours=${hours}`);
+                const data = await res.json();
+
+                const metricsDiv = document.getElementById("metrics");
+
+                metricsDiv.innerHTML = "";
+
+                if (Object.keys(data).length === 0) {
+                    metricsDiv.innerHTML = "No failure metrics found.";
+                    return;
+                }
+
+                for(const service in data) {
+                    const card = document.createElement("div");
+
+                    card.style.marginBottom = "16px";
+                    card.style.padding = "12px";
+                    card.style.background = "#ffffffcc";
+                    card.style.borderRadius = "10px";
+
+                    let content = `<strong>${service}</strong><br><br>`;
+
+                    for(const category in data[service]) {
+                        content += `${category}: ${data[service][category]}<br>`;
+                    }
+
+                    card.innerHTML = content;
+
+                    metricsDiv.appendChild(card);
+                } 
+            }
+
+            async function loadRepeated(hours = 24) {
+                const res = await fetch(`http://localhost:3000/api/failures/repeated?hours=${hours}`);
+                const data = await res.json();
+                
+                const repeatedDiv = document.getElementById("repeated");
+
+                repeatedDiv.innerHTML = "";
+
+                if (data.length === 0) {
+                    repeatedDiv.innerHTML = "No repeated failures detected.";
+                    return;
+                }
+
+                data.forEach(item => {
+                    const card = document.createElement("div");
+
+                    card.style.marginBottom = "16px";
+                    card.style.padding = "12px";
+                    card.style.background = "#ffffffcc";
+                    card.style.borderRadius = "10px";
+
+                    card.innerHTML = `
+                    <strong>${item.service}</strong><br><br>
+                    ${item.raw_message}<br>
+                    Repeated ${item.count} times
+                    `;
+
+                    repeatedDiv.appendChild(card);
+                });
+            }
+
+            //Initial load
+            loadMetrics();
+            loadRepeated();
+        </script>
+        </div>
+    </body>
+</html>
