@@ -1,36 +1,49 @@
 # Failure Intelligence System
 
-Backend system that ingests application logs, extracts structured failure signals, classifies operational issues, generates human-readable failure summaries, and exposes aggregated failure metrics for analysis.
+Backend log intelligence system that converts application logs into structured failure events for classification, time-based metrics, and operational monitoring via REST APIs and a lightweight dashboard.
+
+
+---
 
 ## Problem
 
-Modern distributed applications generate large volumes of logs, making it difficult for engineers to quickly identify meaningful operational failures. This system filters log noise by extracting failure-related signals and transforming them into structured, queryable events for easier debugging and analysis.
+Modern distributed systems generate high-volume logs that are difficult to interpret manually. This system reduces log noise by transforming raw logs into structured, queryable failure data for faster debugging and operational visibility.
 
-## Features
+---
 
-- Log ingestion via REST API  
-- Rule-based failure extraction from log batches  
-- Failure categorization and severity classification  
-- Human-readable failure summaries  
-- Time-based failure metrics (configurable time windows)  
-- Repeated failure detection using threshold-based grouping  
-- Structured storage using PostgreSQL  
-- Service-level failure aggregation using SQL GROUP BY
-- Lightweight dashboard UI for visualizing metrics and repeated failures
+## Architecture
+
+Logs → Ingestion → Failure Extraction → PostgreSQL → Metrics & Analytics → Dashboard
+
+---
+
+## Key Features
+
+- Log ingestion via REST API
+- Rule-based failure detection and classification
+- Time-windowed metrics for operational analysis
+- Repeated failure detection using threshold-based grouping
+- Service-level aggregation using SQL (PostgreSQL)
+- Human-readable failure summaries
+- Lightweight dashboard for visual monitoring
+
+---
 
 ## Tech Stack
 
-- Node.js  
-- Express.js  
-- PostgreSQL  
-- pg (PostgreSQL client)  
+- Node.js
+- Express.js
+- PostgreSQL
+- HTML/CSS (dashboard UI)
 
-## API Overview
+---
 
-### POST /api/failures
-Ingest logs and extract failure signals.
+## API Reference
 
-Request:
+### Ingest Logs
+`POST /api/failures`
+
+```json
 {
   "service": "payments",
   "logs": [
@@ -38,24 +51,42 @@ Request:
     "ERROR Timeout after 30s"
   ]
 }
+```
 
 ---
 
-### GET /api/failures/metrics?hours=24
-Returns failure counts grouped by service and category.
+### Failure Metrics
+`GET /api/failures/metrics?hours=24`
+
+Returns aggregated failure counts grouped by service and category over a time window.
 
 ---
 
-### GET /api/failures/repeated?hours=24
-Returns failures that occur repeatedly within a time window.
+### Repeated Failures
+`GET /api/failures/repeated?hours=24`
+
+Returns failures that exceed repetition thresholds within a time window.
+
+---
+
+## Run Locally
+
+```bash
+npm install
+node index.js
+```
+
+Requires PostgreSQL connection configured in environment variables.
 
 ---
 
 ## Project Structure
 
-index.js        Main server + API routes
-index.html      Lightweight monitoring dashboard UI
-test.http       API endpoint tests  
-package.json    Dependencies and scripts
-.env            Environment variables (not committed)  
-.gitignore      Git ignore rules  
+```
+index.js        Express server + API routes
+index.html      Dashboard UI
+test.http       API testing requests
+package.json    Dependencies
+```
+
+---
