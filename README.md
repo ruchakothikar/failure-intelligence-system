@@ -5,6 +5,15 @@ Backend log intelligence system that converts application logs into structured f
 
 ---
 
+## 🔗 Live Demo
+
+Access the deployed application here:  
+https://2ef7883a-f88d-427f-9329-de287f341e53-00-278t7a6zwjpso.riker.replit.dev/
+
+
+---
+
+
 ## Problem
 
 Modern distributed systems generate high-volume logs that are difficult to interpret manually. This system reduces log noise by transforming raw logs into structured, queryable failure data for faster debugging and operational visibility.
