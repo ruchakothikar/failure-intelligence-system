@@ -5,7 +5,7 @@ Backend log intelligence system that converts application logs into structured f
 
 ---
 
-## 🔗 Live Demo
+## 🔗 Live Demo (available during active session)
 
 Access the deployed application here:  
 https://2ef7883a-f88d-427f-9329-de287f341e53-00-278t7a6zwjpso.riker.replit.dev/
