@@ -1,3 +1,6 @@
+# Local dev endpoint
+# Change base URL if testing deployed version
+
 POST http://localhost:3000/api/failures
 Content-Type: application/json
 
